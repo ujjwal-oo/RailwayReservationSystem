@@ -14,35 +14,27 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-/**
- * Client / demo driver for the Railway Reservation System mini project.
- * Exercises all seven design patterns end-to-end against a real SQLite DB.
- */
 public class Main {
 
     public static void main(String[] args) {
 
-        // ---------- 1. SINGLETON ----------
-        System.out.println("\n################ SINGLETON DEMO ################");
         DatabaseConnectionManager db1 = DatabaseConnectionManager.getInstance();
         DatabaseConnectionManager db2 = DatabaseConnectionManager.getInstance();
         System.out.println("Same instance? " + (db1 == db2));
 
-        // ---------- OBSERVER setup (used by Proxy on success) ----------
         ReservationSubject subject = new ReservationSubject();
         subject.attach(new PassengerAppObserver());
         subject.attach(new SMSNotificationObserver());
         subject.attach(new EmailNotificationObserver());
 
-        // ---------- PROXY (wraps CHAIN OF RESPONSIBILITY internally) ----------
-        System.out.println("\n################ PROXY + CHAIN OF RESPONSIBILITY DEMO ################");
+      // Proxy and COP
         ReservationService reservationService = new ReservationServiceProxy(subject);
 
         Passenger p1 = new Passenger("Rohan Deshmukh", 24, "M", "9876543210", "rohan@example.com");
         Booking booking1 = new Booking(p1, "Duronto Express", "Nagpur", "Mumbai", "AC", "UPI", 1200.0);
         reservationService.reserve(booking1);
 
-        Passenger p2 = new Passenger("", -5, "M", "9999999999", "bad@example.com"); // invalid on purpose
+        Passenger p2 = new Passenger("Ujjwal Tiwari", 5, "M", "9965345676", "bad@example.com"); // invalid on purpose
         Booking badBooking = new Booking(p2, "Duronto Express", "Nagpur", "Mumbai", "SLEEPER", "UPI", 500.0);
         reservationService.reserve(badBooking); // should be rejected by chain
 
@@ -50,8 +42,7 @@ public class Main {
         Booking booking2 = new Booking(p3, "Nagpur Garib Rath", "Nagpur", "Pune", "SLEEPER", "NET_BANKING", 450.0);
         reservationService.reserve(booking2);
 
-        // ---------- FACTORY METHOD ----------
-        System.out.println("\n################ FACTORY METHOD DEMO ################");
+        //FACTORY METHOD
         TicketCreator creator1 = TicketCreatorFactory.getCreator(booking1.getTravelClass());
         double finalFare1 = creator1.issueTicket(booking1);
         System.out.println("Final payable for booking1: Rs." + finalFare1);
@@ -60,8 +51,8 @@ public class Main {
         double finalFare2 = creator2.issueTicket(booking2);
         System.out.println("Final payable for booking2: Rs." + finalFare2);
 
-        // ---------- ABSTRACT FACTORY ----------
-        System.out.println("\n################ ABSTRACT FACTORY DEMO ################");
+        // ABSTRACT FACTORY
+
         TravelClassFactory acFactory = new ACClassFactory();
         acFactory.createSeatAmenity().describe();
         acFactory.createMealService().serve();
@@ -71,7 +62,7 @@ public class Main {
         sleeperFactory.createMealService().serve();
 
         // ---------- BRIDGE ----------
-        System.out.println("\n################ BRIDGE DEMO ################");
+
         Payment upiPayment = new Payment(new UPIGateway());
         upiPayment.pay(finalFare1);
 
