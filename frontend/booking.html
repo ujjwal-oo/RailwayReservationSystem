@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Book Ticket - RailReserve</title>
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+        🚆 RailReserve
+    </div>
+
+    <nav>
+
+        <a href="index.html">
+            Home
+        </a>
+
+        <a href="index.html#search">
+            Search Trains
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<main class="booking-page">
+
+
+    <!-- BOOKING HEADER -->
+
+    <div class="booking-header">
+
+        <p class="tag">
+            RAILWAY RESERVATION
+        </p>
+
+        <h1>
+            Book Your Ticket
+        </h1>
+
+        <p>
+            Enter passenger details to complete
+            your railway reservation.
+        </p>
+
+    </div>
+
+
+
+    <!-- SELECTED TRAIN -->
+
+    <div class="selected-train">
+
+        <div>
+
+            <p class="label">
+                SELECTED TRAIN
+            </p>
+
+            <h2 id="trainName">
+                Loading...
+            </h2>
+
+            <p id="route">
+                Loading...
+            </p>
+
+        </div>
+
+
+        <div class="train-info">
+
+            <div>
+
+                <span>DATE</span>
+
+                <strong id="travelDate">
+                    --
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>DEPARTURE</span>
+
+                <strong id="departure">
+                    --
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- BOOKING FORM -->
+
+    <div class="booking-container">
+
+
+        <form id="bookingForm">
+
+
+            <h2>
+                Passenger Details
+            </h2>
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group full">
+
+                    <label>
+                        Passenger Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="passengerName"
+                        placeholder="Enter full name"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label>
+                        Age
+                    </label>
+
+                    <input
+                        type="number"
+                        id="age"
+                        min="1"
+                        max="120"
+                        placeholder="Age"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label>
+                        Gender
+                    </label>
+
+                    <select id="gender" required>
+
+                        <option value="">
+                            Select gender
+                        </option>
+
+                        <option value="Male">
+                            Male
+                        </option>
+
+                        <option value="Female">
+                            Female
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label>
+                        Mobile Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="mobile"
+                        placeholder="10 digit mobile number"
+                        pattern="[0-9]{10}"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label>
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="example@email.com"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label>
+                        Travel Class
+                    </label>
+
+                    <select id="travelClass" required>
+
+                        <option value="">
+                            Select class
+                        </option>
+
+                        <option value="AC">
+                            AC
+                        </option>
+
+                        <option value="Sleeper">
+                            Sleeper
+                        </option>
+
+                        <option value="General">
+                            General
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label>
+                        Payment Mode
+                    </label>
+
+                    <select id="paymentMode" required>
+
+                        <option value="">
+                            Select payment mode
+                        </option>
+
+                        <option value="UPI">
+                            UPI
+                        </option>
+
+                        <option value="Card">
+                            Card
+                        </option>
+
+                        <option value="Cash">
+                            Cash
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- FARE -->
+
+            <div class="fare-box">
+
+                <div>
+
+                    <span>
+                        Total Fare
+                    </span>
+
+                    <small>
+                        Inclusive of all charges
+                    </small>
+
+                </div>
+
+
+                <strong>
+                    ₹<span id="fare">
+                        1500
+                    </span>
+                </strong>
+
+            </div>
+
+
+
+            <button
+                type="submit"
+                class="confirm-btn">
+
+                🎫 Confirm & Book Ticket
+
+            </button>
+
+
+            <p
+                id="bookingMessage"
+                class="booking-message">
+            </p>
+
+
+        </form>
+
+
+    </div>
+
+</main>
+
+
+
+<footer>
+
+    <div class="logo">
+        🚆 RailReserve
+    </div>
+
+    <p>
+        Railway Reservation System • Java + SQLite
+    </p>
+
+</footer>
+
+
+<script src="js/booking.js"></script>
+
+</body>
+
+</html>
