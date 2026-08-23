@@ -1,46 +1,61 @@
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import singleton.DatabaseConnectionManager;
 
-import java.io.*;
+import model.Booking;
+import model.Passenger;
+
+import observer.EmailNotificationObserver;
+import observer.PassengerAppObserver;
+import observer.ReservationSubject;
+import observer.SMSNotificationObserver;
+
+import proxy.ReservationService;
+import proxy.ReservationServiceProxy;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+
 import java.net.InetSocketAddress;
+
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class WebServer {
 
     private static final int PORT = 8081;
 
-    // Your frontend folder
     private static final String FRONTEND_FOLDER = "frontend";
+
+
+    // =====================================================
+    // MAIN
+    // =====================================================
 
     public static void main(String[] args) throws Exception {
 
         HttpServer server =
                 HttpServer.create(
-                        new InetSocketAddress(8081),
+                        new InetSocketAddress(PORT),
                         0
                 );
 
 
-        // ==========================================
+        // =================================================
         // FRONTEND
-        // ==========================================
+        // =================================================
 
-        server.createContext("/", WebServer::serveFrontend);
+        server.createContext(
+                "/",
+                WebServer::serveFrontend
+        );
 
 
-        // ==========================================
+        // =================================================
         // BOOKING API
-        // ==========================================
+        // =================================================
 
         server.createContext(
                 "/api/book",
@@ -53,8 +68,11 @@ public class WebServer {
 
         System.out.println();
         System.out.println("=================================");
-        System.out.println("Railway Reservation Server Started");
-        System.out.println("Open: http://127.0.0.1:8081");
+        System.out.println(" Railway Reservation Server");
+        System.out.println("=================================");
+        System.out.println(
+                "Open: http://127.0.0.1:" + PORT
+        );
         System.out.println("=================================");
         System.out.println();
 
@@ -64,7 +82,7 @@ public class WebServer {
 
 
     // =====================================================
-    // SERVE HTML / CSS / JS FILES
+    // SERVE FRONTEND
     // =====================================================
 
     private static void serveFrontend(
@@ -75,22 +93,17 @@ public class WebServer {
                 exchange.getRequestURI().getPath();
 
 
-        // "/" means index.html
-
         if (requestPath.equals("/")) {
 
             requestPath = "/index.html";
-
         }
 
-
-        // Remove first /
 
         String fileName =
                 requestPath.substring(1);
 
 
-        // Prevent access outside frontend folder
+        // Security check
 
         if (fileName.contains("..")) {
 
@@ -140,13 +153,11 @@ public class WebServer {
         );
 
 
-        OutputStream output =
-                exchange.getResponseBody();
+        try (OutputStream output =
+                     exchange.getResponseBody()) {
 
-
-        output.write(content);
-
-        output.close();
+            output.write(content);
+        }
     }
 
 
@@ -167,30 +178,25 @@ public class WebServer {
             return "text/html; charset=UTF-8";
         }
 
-
         if (lower.endsWith(".css")) {
 
             return "text/css; charset=UTF-8";
         }
-
 
         if (lower.endsWith(".js")) {
 
             return "application/javascript; charset=UTF-8";
         }
 
-
         if (lower.endsWith(".json")) {
 
             return "application/json; charset=UTF-8";
         }
 
-
         if (lower.endsWith(".png")) {
 
             return "image/png";
         }
-
 
         if (lower.endsWith(".jpg") ||
                 lower.endsWith(".jpeg")) {
@@ -198,30 +204,32 @@ public class WebServer {
             return "image/jpeg";
         }
 
-
         if (lower.endsWith(".svg")) {
 
             return "image/svg+xml";
         }
-
 
         if (lower.endsWith(".ico")) {
 
             return "image/x-icon";
         }
 
-
         return "application/octet-stream";
     }
 
 
     // =====================================================
-    // BOOK TICKET API
+    // BOOK TICKET
     // =====================================================
 
     private static void bookTicket(
             HttpExchange exchange
     ) throws IOException {
+
+
+        // -------------------------------------------------
+        // ONLY POST ALLOWED
+        // -------------------------------------------------
 
         if (!exchange.getRequestMethod()
                 .equalsIgnoreCase("POST")) {
@@ -238,9 +246,10 @@ public class WebServer {
 
         try {
 
-            // ------------------------------------------
-            // Read JSON
-            // ------------------------------------------
+
+            // =================================================
+            // READ JSON FROM FRONTEND
+            // =================================================
 
             String json =
                     new String(
@@ -251,13 +260,16 @@ public class WebServer {
 
 
             System.out.println();
-            System.out.println("========== NEW BOOKING ==========");
+            System.out.println(
+                    "========== NEW WEB BOOKING =========="
+            );
+
             System.out.println(json);
 
 
-            // ------------------------------------------
-            // Extract values
-            // ------------------------------------------
+            // =================================================
+            // READ VALUES
+            // =================================================
 
             String passengerName =
                     getJsonValue(
@@ -336,9 +348,9 @@ public class WebServer {
                     );
 
 
-            // ------------------------------------------
-            // Validation
-            // ------------------------------------------
+            // =================================================
+            // BASIC VALIDATION
+            // =================================================
 
             if (passengerName.isEmpty()) {
 
@@ -370,179 +382,239 @@ public class WebServer {
 
             double fare =
                     fareString.isEmpty()
-                            ? 1500
+                            ? 1500.0
                             : Double.parseDouble(fareString);
 
 
-            // ------------------------------------------
-            // DATABASE
-            // ------------------------------------------
+            // =================================================
+            // CREATE PASSENGER OBJECT
+            // =================================================
 
-            DatabaseConnectionManager db =
-                    DatabaseConnectionManager
-                            .getInstance();
-
-
-            Connection connection =
-                    db.getConnection();
-
-
-            String sql =
-                    "INSERT INTO bookings " +
-                            "(passenger_name, age, gender, mobile, email, " +
-                            "train_name, source, destination, travel_class, " +
-                            "payment_mode, fare, status) " +
-
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-
-            PreparedStatement statement =
-                    connection.prepareStatement(
-                            sql,
-                            java.sql.Statement.RETURN_GENERATED_KEYS
+            Passenger passenger =
+                    new Passenger(
+                            passengerName,
+                            age,
+                            gender,
+                            mobile,
+                            email
                     );
 
 
-            statement.setString(
-                    1,
-                    passengerName
+            // =================================================
+            // CREATE BOOKING OBJECT
+            // =================================================
+
+            Booking booking =
+                    new Booking(
+                            passenger,
+                            trainName,
+                            source,
+                            destination,
+                            travelClass,
+                            paymentMode,
+                            fare
+                    );
+
+
+            System.out.println();
+            System.out.println(
+                    "[WebServer] Booking object created:"
+            );
+
+            System.out.println(booking);
+
+
+            // =================================================
+            // OBSERVER PATTERN
+            // =================================================
+
+            ReservationSubject subject =
+                    new ReservationSubject();
+
+
+            subject.attach(
+                    new PassengerAppObserver()
             );
 
 
-            statement.setInt(
-                    2,
-                    age
+            subject.attach(
+                    new SMSNotificationObserver()
             );
 
 
-            statement.setString(
-                    3,
-                    gender
+            subject.attach(
+                    new EmailNotificationObserver()
             );
 
 
-            statement.setString(
-                    4,
-                    mobile
+            // =================================================
+            // PROXY PATTERN
+            // =================================================
+
+            ReservationService reservationService =
+                    new ReservationServiceProxy(subject);
+
+
+            System.out.println();
+            System.out.println(
+                    "[WebServer] Sending booking to Proxy..."
             );
 
 
-            statement.setString(
-                    5,
-                    email
-            );
+            // =================================================
+            // RESERVATION
+            //
+            // Proxy
+            //    ↓
+            // Chain of Responsibility
+            //    ↓
+            // RealReservationService
+            //    ↓
+            // Singleton Database
+            //    ↓
+            // SQLite
+            //
+            // Then Observer notification
+            // =================================================
+
+            boolean success =
+                    reservationService.reserve(booking);
 
 
-            statement.setString(
-                    6,
-                    trainName
-            );
+            // =================================================
+            // SUCCESS
+            // =================================================
+
+            if (success) {
 
 
-            statement.setString(
-                    7,
-                    source
-            );
+                int pnr =
+                        booking.getPnr();
 
 
-            statement.setString(
-                    8,
-                    destination
-            );
+                System.out.println();
+                System.out.println(
+                        "================================="
+                );
+
+                System.out.println(
+                        "       BOOKING SUCCESSFUL"
+                );
+
+                System.out.println(
+                        "================================="
+                );
+
+                System.out.println(
+                        "PNR       : " + pnr
+                );
+
+                System.out.println(
+                        "Passenger : " +
+                                booking.getPassenger().getName()
+                );
+
+                System.out.println(
+                        "Train     : " +
+                                booking.getTrainName()
+                );
+
+                System.out.println(
+                        "Route     : " +
+                                booking.getSource() +
+                                " -> " +
+                                booking.getDestination()
+                );
+
+                System.out.println(
+                        "Class     : " +
+                                booking.getTravelClass()
+                );
+
+                System.out.println(
+                        "Fare      : Rs." +
+                                booking.getFare()
+                );
+
+                System.out.println(
+                        "Status    : " +
+                                booking.getStatus()
+                );
+
+                System.out.println(
+                        "================================="
+                );
 
 
-            statement.setString(
-                    9,
-                    travelClass
-            );
+                // =================================================
+                // SEND PNR TO FRONTEND
+                // =================================================
+
+                String response =
+                        "{"
+                                + "\"success\":true,"
+                                + "\"pnr\":" + pnr + ","
+                                + "\"message\":\"Booking successful\""
+                                + "}";
 
 
-            statement.setString(
-                    10,
-                    paymentMode
-            );
+                sendJson(
+                        exchange,
+                        200,
+                        response
+                );
 
 
-            statement.setDouble(
-                    11,
-                    fare
-            );
+            } else {
 
 
-            statement.setString(
-                    12,
-                    "CONFIRMED"
-            );
+                // =================================================
+                // BOOKING REJECTED
+                // =================================================
+
+                System.out.println();
+                System.out.println(
+                        "[WebServer] Booking rejected by validation chain."
+                );
 
 
-            statement.executeUpdate();
+                String response =
+                        "{"
+                                + "\"success\":false,"
+                                + "\"message\":\"Booking rejected by validation chain\""
+                                + "}";
 
 
-            // ------------------------------------------
-            // GET PNR
-            // ------------------------------------------
-
-            int pnr = 0;
-
-
-            ResultSet keys =
-                    statement.getGeneratedKeys();
-
-
-            if (keys.next()) {
-
-                pnr =
-                        keys.getInt(1);
+                sendJson(
+                        exchange,
+                        400,
+                        response
+                );
             }
-
-
-            statement.close();
-
-
-            System.out.println(
-                    "Booking successful!"
-            );
-
-
-            System.out.println(
-                    "PNR: " + pnr
-            );
-
-
-            System.out.println(
-                    "================================"
-            );
-
-
-            // ------------------------------------------
-            // RESPONSE
-            // ------------------------------------------
-
-            String response =
-                    "{"
-                            + "\"success\":true,"
-                            + "\"pnr\":" + pnr + ","
-                            + "\"message\":\"Booking successful\""
-                            + "}";
-
-
-            sendJson(
-                    exchange,
-                    200,
-                    response
-            );
 
 
         } catch (Exception e) {
 
+
             e.printStackTrace();
+
+
+            String message =
+                    e.getMessage();
+
+
+            if (message == null) {
+
+                message =
+                        "Unknown server error";
+            }
 
 
             String response =
                     "{"
                             + "\"success\":false,"
                             + "\"message\":\""
-                            + escapeJson(e.getMessage())
+                            + escapeJson(message)
                             + "\""
                             + "}";
 
@@ -557,7 +629,7 @@ public class WebServer {
 
 
     // =====================================================
-    // SIMPLE JSON VALUE READER
+    // SIMPLE JSON READER
     // =====================================================
 
     private static String getJsonValue(
@@ -608,13 +680,16 @@ public class WebServer {
         }
 
 
-        // String value
+        // =================================================
+        // STRING
+        // =================================================
 
         if (
                 start < json.length()
                         &&
                         json.charAt(start) == '"'
         ) {
+
 
             start++;
 
@@ -623,7 +698,8 @@ public class WebServer {
                     new StringBuilder();
 
 
-            boolean escaped = false;
+            boolean escaped =
+                    false;
 
 
             for (
@@ -631,6 +707,7 @@ public class WebServer {
                     i < json.length();
                     i++
             ) {
+
 
                 char c =
                         json.charAt(i);
@@ -661,7 +738,9 @@ public class WebServer {
         }
 
 
-        // Number / boolean
+        // =================================================
+        // NUMBER / BOOLEAN
+        // =================================================
 
         int end =
                 start;
@@ -696,6 +775,7 @@ public class WebServer {
             String response
     ) throws IOException {
 
+
         byte[] data =
                 response.getBytes(
                         StandardCharsets.UTF_8
@@ -715,13 +795,11 @@ public class WebServer {
         );
 
 
-        OutputStream output =
-                exchange.getResponseBody();
+        try (OutputStream output =
+                     exchange.getResponseBody()) {
 
-
-        output.write(data);
-
-        output.close();
+            output.write(data);
+        }
     }
 
 
@@ -732,6 +810,7 @@ public class WebServer {
     private static void send404(
             HttpExchange exchange
     ) throws IOException {
+
 
         String response =
                 "404 - File Not Found: "
@@ -752,13 +831,11 @@ public class WebServer {
         );
 
 
-        OutputStream output =
-                exchange.getResponseBody();
+        try (OutputStream output =
+                     exchange.getResponseBody()) {
 
-
-        output.write(data);
-
-        output.close();
+            output.write(data);
+        }
     }
 
 
