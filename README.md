@@ -1,4 +1,4 @@
-# Railway Reservation System — Design Patterns Mini Project
+# Railway Reservation System — Design Patterns Mini Project  
 
 A single Java console application implementing **7 design patterns** together
 in one coherent domain (railway ticket booking), backed by a real **SQLite**
