@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RailReserve - Railway Reservation</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header>
+    <div class="logo">🚆 RailReserve</div>
+
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#search">Search Trains</a>
+        <a href="#services">Services</a>
+        <a href="#login">Login</a>
+    </nav>
+</header>
+
+
+<section id="home" class="hero">
+
+    <div class="hero-content">
+
+        <p class="tag">RAILWAY RESERVATION SYSTEM</p>
+
+        <h1>
+            Travel smarter.<br>
+            <span>Book your journey.</span>
+        </h1>
+
+        <p class="subtitle">
+            Search trains, reserve your seat and manage
+            your railway tickets in one place.
+        </p>
+
+
+        <div id="search" class="search-box">
+
+            <h2>Search Trains</h2>
+
+            <form id="searchForm">
+
+                <div class="input-box">
+                    <label>FROM</label>
+                    <input
+                        type="text"
+                        id="from"
+                        placeholder="Mumbai"
+                        required
+                    >
+                </div>
+
+
+                <button type="button" id="swap">⇄</button>
+
+
+                <div class="input-box">
+                    <label>TO</label>
+                    <input
+                        type="text"
+                        id="to"
+                        placeholder="Delhi"
+                        required
+                    >
+                </div>
+
+
+                <div class="input-box">
+                    <label>JOURNEY DATE</label>
+                    <input
+                        type="date"
+                        id="date"
+                        required
+                    >
+                </div>
+
+
+                <button class="search-btn" type="submit">
+                    🔍 Search
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section id="results" class="results hidden">
+
+    <div class="section-heading">
+
+        <div>
+            <p class="tag">AVAILABLE TRAINS</p>
+            <h2>Choose your train</h2>
+        </div>
+
+        <button id="newSearch" class="outline-btn">
+            New Search
+        </button>
+
+    </div>
+
+
+    <div id="trainList"></div>
+
+</section>
+
+
+<section id="services" class="services">
+
+    <p class="tag">OUR SERVICES</p>
+
+    <h2>Everything for your journey</h2>
+
+
+    <div class="service-container">
+
+        <div class="service-card">
+            <div class="icon">🔎</div>
+            <h3>Search Trains</h3>
+            <p>
+                Find trains between your preferred stations.
+            </p>
+        </div>
+
+
+        <div class="service-card">
+            <div class="icon">🎫</div>
+            <h3>Book Tickets</h3>
+            <p>
+                Reserve your seat quickly and easily.
+            </p>
+        </div>
+
+
+        <div class="service-card">
+            <div class="icon">📋</div>
+            <h3>My Reservations</h3>
+            <p>
+                View your booking and ticket details.
+            </p>
+        </div>
+
+
+        <div class="service-card">
+            <div class="icon">❌</div>
+            <h3>Cancel Ticket</h3>
+            <p>
+                Manage and cancel your reservation.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section id="login" class="login-section">
+
+    <div class="login-card">
+
+        <p class="tag">WELCOME BACK</p>
+
+        <h2>Login</h2>
+
+        <form id="loginForm">
+
+            <input
+                type="text"
+                placeholder="Username"
+                required
+            >
+
+            <input
+                type="password"
+                placeholder="Password"
+                required
+            >
+
+            <button class="search-btn">
+                Login
+            </button>
+
+        </form>
+
+        <p id="loginMessage"></p>
+
+    </div>
+
+</section>
+
+
+<footer>
+
+    <div class="logo">
+        🚆 RailReserve
+    </div>
+
+    <p>
+        Railway Reservation System • Java + SQLite
+    </p>
+
+</footer>
+
+
+<script src="js/home.js"></script>
+
+</body>
+</html>
