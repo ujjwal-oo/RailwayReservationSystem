@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/RailwayReservationSystem_v2_fixed2/RailwayReservationSystem/lib/sqlite-jdbc-3.40.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/RailwayReservationSystem_v2_fixed2/RailwayReservationSystem/lib/sqlite-jdbc-3.46.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/RailwayReservationSystem_v2_fixed2/RailwayReservationSystem/lib/slf4j-api-1.7.36.jar!/" />
+      <root url="jar://$PROJECT_DIR$/RailwayReservationSystem_v2_fixed2/RailwayReservationSystem/lib/slf4j-simple-2.0.13.jar!/" />
+      <root url="jar://$PROJECT_DIR$/RailwayReservationSystem_v2_fixed2/RailwayReservationSystem/lib/slf4j-api-2.0.13.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

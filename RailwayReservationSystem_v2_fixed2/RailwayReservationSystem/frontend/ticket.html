@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Ticket Confirmed - RailReserve</title>
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        🚆 RailReserve
+    </div>
+
+    <nav>
+
+        <a href="index.html">
+            Home
+        </a>
+
+        <a href="index.html#search">
+            Book Another
+        </a>
+
+    </nav>
+
+</header>
+
+<main class="ticket-page">
+
+    <div class="success-icon" id="statusIcon">
+        ✓
+    </div>
+
+    <p class="tag" id="statusTag">
+        BOOKING CONFIRMED
+    </p>
+
+    <h1 id="statusTitle">
+        Your ticket is confirmed!
+    </h1>
+
+    <p class="ticket-subtitle" id="statusSubtitle">
+        Your railway reservation has been successfully
+        saved to the system.
+    </p>
+
+    <div class="ticket-card">
+
+        <div class="ticket-top">
+
+            <div>
+
+                <span>
+                    PNR NUMBER
+                </span>
+
+                <strong id="pnr">
+                    ------
+                </strong>
+
+            </div>
+
+            <div id="statusBadge" class="status-badge status-confirmed">
+                ✓ CONFIRMED
+            </div>
+
+        </div>
+
+        <div class="ticket-divider"></div>
+
+        <div class="ticket-details">
+
+            <div>
+                <span>PASSENGER</span>
+                <strong id="passenger">--</strong>
+            </div>
+
+            <div>
+                <span>AGE / GENDER</span>
+                <strong id="ageGender">--</strong>
+            </div>
+
+            <div>
+                <span>TRAIN</span>
+                <strong id="train">--</strong>
+            </div>
+
+            <div>
+                <span>FROM</span>
+                <strong id="from">--</strong>
+            </div>
+
+            <div>
+                <span>TO</span>
+                <strong id="to">--</strong>
+            </div>
+
+            <div>
+                <span>JOURNEY DATE</span>
+                <strong id="journeyDate">--</strong>
+            </div>
+
+            <div>
+                <span>CLASS</span>
+                <strong id="class">--</strong>
+            </div>
+
+            <div>
+                <span>COACH / BERTH</span>
+                <strong id="berth">--</strong>
+            </div>
+
+            <div>
+                <span>FARE</span>
+                <strong>
+                    ₹<i id="fare" style="font-style:normal;">--</i>
+                </strong>
+                <small id="fareCategory" style="color:#778195;"></small>
+            </div>
+
+        </div>
+
+        <div id="berthNote" class="berth-note hidden"></div>
+
+    </div>
+
+    <p id="pageMessage" class="page-message"></p>
+
+    <div class="ticket-actions">
+
+        <button id="cancelBtn" class="action-btn danger hidden">
+            Cancel Ticket
+        </button>
+
+        <button id="undoBtn" class="action-btn hidden">
+            ↩ Undo Cancellation
+        </button>
+
+    </div>
+
+    <div id="rebookSection" class="ticket-section hidden">
+
+        <h3>Book again from this ticket</h3>
+
+        <p class="hint">
+            Clones this booking, so you only change what is different.
+        </p>
+
+        <div class="rebook-row">
+
+            <div>
+                <label for="rebookDate">Date</label>
+                <input type="date" id="rebookDate">
+            </div>
+
+            <div>
+                <button id="returnBtn" class="action-btn" type="button" style="width:100%;height:44px;">
+                    ⇄ Return journey
+                </button>
+            </div>
+
+        </div>
+
+        <p class="hint" style="margin-top:18px;">
+            Or book the same journey for another passenger (same date as above):
+        </p>
+
+        <div class="rebook-row">
+
+            <div>
+                <label for="compName">Name</label>
+                <input type="text" id="compName" placeholder="Full name">
+            </div>
+
+            <div>
+                <label for="compAge">Age</label>
+                <input type="number" id="compAge" min="1" max="120" placeholder="Age">
+            </div>
+
+            <div>
+                <label for="compGender">Gender</label>
+                <select id="compGender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div>
+                <button id="companionBtn" class="action-btn" type="button" style="width:100%;height:44px;">
+                    + Add passenger
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="historySection" class="ticket-section hidden">
+
+        <h3>Saved states</h3>
+
+        <p class="hint">
+            Snapshots taken before changes. "Undo" restores the latest one.
+        </p>
+
+        <ul id="historyList" class="history-list"></ul>
+
+    </div>
+
+    <a
+        href="index.html"
+        class="home-btn">
+
+        ← Back to Home
+
+    </a>
+
+</main>
+
+<script src="js/ticket.js"></script>
+
+</body>
+
+</html>

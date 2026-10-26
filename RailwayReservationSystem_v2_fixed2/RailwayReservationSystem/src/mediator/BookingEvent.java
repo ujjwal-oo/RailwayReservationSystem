@@ -1,0 +1,13 @@
+package mediator;
+
+public enum BookingEvent {
+    FARE_CALCULATED,
+    RESERVATION_REJECTED,
+    RESERVED,
+    BERTH_ALLOCATED,
+    BERTH_UNAVAILABLE,
+    PAYMENT_DONE,
+    PAYMENT_FAILED,
+    CANCELLED,
+    RESTORED
+}
